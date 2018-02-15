@@ -9,12 +9,18 @@ file.
 
 ## Installation
 
-The script requires [Python3](https://python.org). It can be installed with:
+The script can be installed with [pip](https://pip.pypa.io/en/stable/):
 
 ```
 pip install git+https://github.com/kwohlfahrt/survey_fix.git
 ```
-    
+
+### Dependencies
+
+[Python](https://python.org) 3.6 or newer is required. Other dependencies are
+`ezdxf` and `click` - these will be automatically installed if pip is used as
+shown above.
+
 ## Usage
 
 This program is simple to use from the command-line:
