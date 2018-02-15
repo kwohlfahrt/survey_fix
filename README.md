@@ -1,5 +1,7 @@
 # Survey Fix
 
+[![Build Status](https://travis-ci.org/kwohlfahrt/survey_fix.svg?branch=master)](https://travis-ci.org/kwohlfahrt/survey_fix)
+
 This tool fixes flat surveys (i.e. points with 0 elevation and a nearby text
 label containing the elevation) into 3D points. Inputs and outputs a DXF format
 file.
