@@ -4,6 +4,7 @@ import click
 from pathlib import Path
 import operator as op
 from math import sqrt
+from functools import partial
 
 
 def dist(a, b):
@@ -11,20 +12,32 @@ def dist(a, b):
     return sqrt(sum(d ** 2 for d in displacement))
 
 
+def marker_location(element):
+    dxftype = element.dxftype()
+    if dxftype == "POINT":
+        return element.get_dxf_attrib('location')
+    else:
+        raise ValueError("Unrecognized element type: {}".format(dxftype))
+
+
 def fixed_locations(drawing):
     # This is a brute-force n^2 algorithm. Could be improved
-    points = filter(lambda e: e.dxftype() == 'POINT', drawing.modelspace())
-    texts = list(filter(lambda e: e.dxftype() == 'TEXT', drawing.modelspace()))
-    for point in points:
-        location = point.get_dxf_attrib('location')
-        closest = min(texts, key=lambda t: dist(location, t.get_dxf_attrib('insert')))
-
+    heights = {}
+    for text in drawing.modelspace().query("TEXT"):
+        location = text.get_dxf_attrib('insert')
         try:
-            height = float(closest.get_dxf_attrib('text'))
+            height = float(text.get_dxf_attrib('text'))
         except ValueError:
-            continue
+            heights[location] = None
+        else:
+            heights[location] = height
 
-        yield location[:2] + (height,)
+    markers = drawing.modelspace().query("POINT")
+    for location in map(marker_location, markers):
+        closest = min(heights, key=partial(dist, location))
+        height = heights[closest]
+        if height is not None:
+            yield location[:2] + (height,)
 
 
 @click.command()
