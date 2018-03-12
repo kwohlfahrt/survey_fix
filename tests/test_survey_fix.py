@@ -14,8 +14,8 @@ def test_dist(a, b, expected):
 
 
 def test_main(tmpdir):
-    infile = tmpdir.join("in.dxf")
-    with infile.open("w") as f:
+    infile = str(tmpdir.join("in.dxf"))
+    with r12writer(infile) as dxf:
         points = [(1, 0, 0), (2, 0, 0), (3, 0, 0)]
         texts = [
             ((1.1, 0), 'foo'),
@@ -23,16 +23,15 @@ def test_main(tmpdir):
             ((3, 0.1), '6.3'),
         ]
 
-        dxf = R12FastStreamWriter(f)
         for pt in points:
             dxf.add_point(pt)
         for pt, txt in texts:
             dxf.add_text(txt, insert=pt)
-        dxf.close()
-    outfile = tmpdir.join("out.dxf")
+
+    outfile = str(tmpdir.join("out.dxf"))
 
     runner = CliRunner()
-    r = runner.invoke(main, [str(infile), str(outfile)])
+    r = runner.invoke(main, [infile, outfile])
     assert r.exit_code == 0
 
     dxf = ezdxf.readfile(str(outfile))

@@ -1,5 +1,5 @@
 import ezdxf
-from ezdxf.r12writer import R12FastStreamWriter
+from ezdxf.r12writer import r12writer
 import click
 from pathlib import Path
 import operator as op
@@ -32,14 +32,9 @@ def fixed_locations(drawing):
 @click.argument('out_path', type=Path)
 def main(in_path, out_path):
     fixed = fixed_locations(ezdxf.readfile(in_path))
-    with out_path.open("w") as f:
-        # r12writer context manager doesn't seem to work if exception is thrown
-        dxf = R12FastStreamWriter(f)
-        try:
-            for point in fixed:
-                dxf.add_point(point)
-        finally:
-            dxf.close()
+    with r12writer(out_path) as dxf:
+        for point in fixed:
+            dxf.add_point(point)
 
 
 if __name__ == "__main__":
