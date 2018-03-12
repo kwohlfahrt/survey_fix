@@ -35,3 +35,10 @@ not found. In that case, the following may work:
 ```
 python3 -m survey_fix input.dxf output.dxf
 ```
+
+### Limitations
+
+The tool supports two kinds of labelled points:
+
+- POINT entities with a nearby text label
+- INSERT entities named 'X', located at their insertion point

@@ -4,6 +4,7 @@ import click
 from pathlib import Path
 import operator as op
 from math import sqrt
+from itertools import chain
 from functools import partial
 
 
@@ -16,6 +17,8 @@ def marker_location(element):
     dxftype = element.dxftype()
     if dxftype == "POINT":
         return element.get_dxf_attrib('location')
+    elif dxftype == "INSERT":
+        return element.get_dxf_attrib('insert')
     else:
         raise ValueError("Unrecognized element type: {}".format(dxftype))
 
@@ -32,7 +35,9 @@ def fixed_locations(drawing):
         else:
             heights[location] = height
 
-    markers = drawing.modelspace().query("POINT")
+    markers = chain.from_iterable(map(
+        drawing.modelspace().query, ["POINT", "INSERT[name=='X']"]
+    ))
     for location in map(marker_location, markers):
         closest = min(heights, key=partial(dist, location))
         height = heights[closest]
